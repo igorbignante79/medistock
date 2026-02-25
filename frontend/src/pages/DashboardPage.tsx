@@ -21,9 +21,9 @@ export default function DashboardPage() {
     <div style={{ maxWidth: 900, margin: "40px auto", fontFamily: "system-ui" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <h2>Dashboard</h2>
-        <button onClick={() => { clearToken(); location.href = "/login"; }}>Esci</button>
-      </div>
-
+        <button onClick={() => { clearToken(); location.hash = "#/login"; }}>
+  Esci
+</button>
       {err && <div style={{ color: "red" }}>{err}</div>}
       {!cloud ? (
         <div>Caricamento...</div>
