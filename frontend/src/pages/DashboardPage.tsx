@@ -21,9 +21,16 @@ export default function DashboardPage() {
     <div style={{ maxWidth: 900, margin: "40px auto", fontFamily: "system-ui" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <h2>Dashboard</h2>
-        <button onClick={() => { clearToken(); location.hash = "#/login"; }}>
-  Esci
-</button>
+        <button
+          onClick={() => {
+            clearToken();
+            location.hash = "#/login";
+          }}
+        >
+          Esci
+        </button>
+      </div>
+
       {err && <div style={{ color: "red" }}>{err}</div>}
       {!cloud ? (
         <div>Caricamento...</div>
@@ -32,16 +39,6 @@ export default function DashboardPage() {
           <p><b>Prodotti:</b> {cloud.products.length}</p>
           <p><b>Movimenti:</b> {cloud.transactions.length}</p>
           <p><b>Utenti:</b> {cloud.users.length}</p>
-
-          <hr />
-          <h3>Prodotti (anteprima)</h3>
-          <ul>
-            {cloud.products.slice(0, 10).map(p => (
-              <li key={p.id}>
-                {p.name} — qty {p.quantity}
-              </li>
-            ))}
-          </ul>
         </div>
       )}
     </div>
