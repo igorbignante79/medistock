@@ -1,41 +1,84 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Button, Paper, PasswordInput, Text, TextInput, Title, Stack } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
 import { login, setToken } from "../api";
 
 export default function LoginPage() {
-  const nav = useNavigate();
-  const [username, setUsername] = useState("admin");
-  const [password, setPassword] = useState("admin");
-  const [err, setErr] = useState("");
+  const navigate = useNavigate();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  async function onSubmit(e: React.FormEvent) {
+  async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
-    setErr("");
+    setLoading(true);
+
     try {
-      const data = await login(username, password);
-      setToken(data.token);
-      nav("/");
+      const data = await login(username, password); // <-- prende token dal backend
+      setToken(data.token); // <-- SALVA TOKEN (questa era la parte mancante)
+
+      notifications.show({
+        title: "Accesso effettuato",
+        message: `Benvenuto, ${data.user?.username ?? "utente"}`,
+        color: "green",
+      });
+
+      navigate("/");
     } catch {
-      setErr("Login fallito");
+      notifications.show({
+        title: "Errore di accesso",
+        message: "Nome utente o password non corretti",
+        color: "red",
+      });
+    } finally {
+      setLoading(false);
     }
   }
 
   return (
-    <div style={{ maxWidth: 360, margin: "80px auto", fontFamily: "system-ui" }}>
-      <h2>Medistock</h2>
-      <form onSubmit={onSubmit}>
-        <div>
-          <label>Username</label><br />
-          <input value={username} onChange={e => setUsername(e.target.value)} style={{ width: "100%" }} />
-        </div>
-        <div style={{ marginTop: 10 }}>
-          <label>Password</label><br />
-          <input type="password" value={password} onChange={e => setPassword(e.target.value)} style={{ width: "100%" }} />
-        </div>
-        {err && <div style={{ color: "red", marginTop: 10 }}>{err}</div>}
-        <button style={{ marginTop: 12, width: "100%" }}>Entra</button>
-      </form>
-      <p style={{ opacity: 0.7, marginTop: 10 }}>Di default: admin / admin (cambiali in Render env)</p>
+    <div
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "#f8f9fa",
+      }}
+    >
+      <Paper shadow="md" p="xl" radius="md" w={400}>
+        <form onSubmit={handleLogin}>
+          <Stack>
+            <Title order={2} ta="center">
+              Accesso a Medistock
+            </Title>
+
+            <Text c="dimmed" size="sm" ta="center">
+              Sistema di gestione magazzino
+            </Text>
+
+            <TextInput
+              label="Nome utente"
+              placeholder="Inserisci il nome utente"
+              value={username}
+              onChange={(e) => setUsername(e.currentTarget.value)}
+              required
+            />
+
+            <PasswordInput
+              label="Password"
+              placeholder="Inserisci la password"
+              value={password}
+              onChange={(e) => setPassword(e.currentTarget.value)}
+              required
+            />
+
+            <Button type="submit" loading={loading} fullWidth mt="md">
+              Accedi
+            </Button>
+          </Stack>
+        </form>
+      </Paper>
     </div>
   );
 }
