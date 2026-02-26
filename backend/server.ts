@@ -72,7 +72,6 @@ async function initDb() {
     );
   `);
 
-  // Seed admin solo se non esiste
   const existing = await pool.query(
     `SELECT id FROM users WHERE username=$1 LIMIT 1`,
     [ADMIN_USERNAME]
@@ -87,6 +86,18 @@ async function initDb() {
     );
   }
 }
+
+// ======================
+// HEALTH
+// ======================
+app.get('/health', async (_req, res) => {
+  try {
+    await pool.query('select 1');
+    res.json({ ok: true, env: NODE_ENV, db: true });
+  } catch {
+    res.json({ ok: true, env: NODE_ENV, db: false });
+  }
+});
 
 // ======================
 // AUTH
